@@ -131,6 +131,11 @@ as $$
   select is_open from public.election_settings where id = 1;
 $$;
 
+-- Allowlisted admin emails (works even if profiles.is_admin was not set)
+create table if not exists public.admin_emails (
+  email text primary key
+);
+
 -- Helper: is current user admin?
 create or replace function public.is_admin()
 returns boolean
@@ -139,10 +144,17 @@ stable
 security definer
 set search_path = public
 as $$
-  select coalesce(
-    (select is_admin from public.profiles where id = auth.uid()),
-    false
-  );
+  select
+    coalesce(
+      (select is_admin from public.profiles where id = auth.uid()),
+      false
+    )
+    or exists (
+      select 1
+      from public.admin_emails ae
+      join auth.users u on lower(u.email) = lower(ae.email)
+      where u.id = auth.uid()
+    );
 $$;
 
 -- Expose tables to the Data API (needed when "Automatically expose new tables" is OFF)

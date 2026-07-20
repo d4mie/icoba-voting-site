@@ -5,11 +5,13 @@ import {
   getProfile,
   requireVerifiedUser,
 } from "@/lib/auth";
+import { resolveIsAdmin } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function VoteHomePage() {
   const user = await requireVerifiedUser();
   const profile = await getProfile(user.id);
+  const isAdmin = await resolveIsAdmin(user);
   const settings = await getElectionSettings();
   const supabase = await createClient();
 
@@ -97,7 +99,7 @@ export default async function VoteHomePage() {
           </div>
         )}
 
-        {profile?.is_admin && (
+        {isAdmin && (
           <div className="mt-8">
             <Link href="/admin" className="text-sm font-medium text-emerald-800 hover:underline">
               Admin panel →
