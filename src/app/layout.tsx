@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ICOBA Voting",
   description: "Vote for ICOBA Positions and Awards",
+  icons: {
+    icon: "/igbobi-college-emblem.jpg",
+    apple: "/igbobi-college-emblem.jpg",
+  },
 };
 
 export default function RootLayout({
@@ -26,6 +30,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      style={{ colorScheme: "light" }}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

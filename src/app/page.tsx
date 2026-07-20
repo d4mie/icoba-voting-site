@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/BrandLogo";
 import { getSessionUser } from "@/lib/auth";
 
 export default async function HomePage() {
@@ -7,9 +8,7 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-950 to-emerald-900 text-white">
       <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-4 py-16 text-center">
-        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-amber-400 text-2xl font-bold text-emerald-950">
-          IC
-        </div>
+        <BrandLogo size={112} priority className="mb-6 h-28 w-28 drop-shadow-lg" />
         <h1 className="text-4xl font-bold tracking-tight">ICOBA Voting</h1>
         <p className="mt-4 max-w-lg text-lg text-emerald-100">
           Cast your vote for Positions and Awards. Sign up with your email,

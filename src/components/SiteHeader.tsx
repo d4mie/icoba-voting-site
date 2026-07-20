@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export function SiteHeader({
   userName,
@@ -11,9 +12,7 @@ export function SiteHeader({
     <header className="border-b border-emerald-900/10 bg-white">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
         <Link href="/vote" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-800 text-sm font-bold text-amber-300">
-            IC
-          </div>
+          <BrandLogo size={44} className="h-11 w-11" />
           <div>
             <p className="text-sm font-semibold text-emerald-950">ICOBA Voting</p>
             {userName && (

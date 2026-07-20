@@ -53,7 +53,8 @@ export function SignupForm() {
             required
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 px-3 py-2.5 outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-100"
+            placeholder="First name"
+            className="w-full rounded-lg border px-3 py-2.5 text-base text-slate-900 placeholder:text-slate-500"
           />
         </div>
         <div>
@@ -65,7 +66,8 @@ export function SignupForm() {
             required
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 px-3 py-2.5 outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-100"
+            placeholder="Last name"
+            className="w-full rounded-lg border px-3 py-2.5 text-base text-slate-900 placeholder:text-slate-500"
           />
         </div>
       </div>
@@ -78,7 +80,8 @@ export function SignupForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2.5 outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-100"
+          placeholder="you@email.com"
+          className="w-full rounded-lg border px-3 py-2.5 text-base text-slate-900 placeholder:text-slate-500"
         />
       </div>
       <div>
@@ -91,7 +94,8 @@ export function SignupForm() {
           minLength={8}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2.5 outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-100"
+          placeholder="At least 8 characters"
+          className="w-full rounded-lg border px-3 py-2.5 text-base text-slate-900 placeholder:text-slate-500"
         />
         <p className="mt-1 text-xs text-stone-500">At least 8 characters</p>
       </div>

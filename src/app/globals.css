@@ -1,26 +1,65 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --icoba-green: #0b6b3a;
+  --icoba-green-dark: #084d2a;
+  --icoba-yellow: #f5c518;
+  --icoba-yellow-soft: #fff6c2;
+  --icoba-blue: #1d4ed8;
+  --icoba-blue-soft: #dbeafe;
+  --background: #f7faf8;
+  --foreground: #0f172a;
+  --field-bg: #ffffff;
+  --field-text: #0f172a;
+  --field-placeholder: #64748b;
+  --field-border: #94a3b8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-icoba-green: var(--icoba-green);
+  --color-icoba-yellow: var(--icoba-yellow);
+  --color-icoba-blue: var(--icoba-blue);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Force readable field text — never inherit light/transparent colors */
+input,
+textarea,
+select {
+  color: var(--field-text) !important;
+  background-color: var(--field-bg) !important;
+  border-color: var(--field-border);
+  caret-color: var(--icoba-green);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--field-placeholder) !important;
+  opacity: 1 !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--icoba-green) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--icoba-yellow) 55%, transparent);
+}
+
+select {
+  color: var(--field-text) !important;
+}
+
+select option {
+  color: var(--field-text);
+  background: var(--field-bg);
 }

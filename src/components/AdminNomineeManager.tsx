@@ -79,7 +79,7 @@ export function AdminNomineeManager({
             placeholder="Full name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="rounded-lg border border-stone-300 px-3 py-2 text-sm"
+            className="rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500"
           />
           <input
             type="text"
@@ -87,7 +87,7 @@ export function AdminNomineeManager({
             placeholder="School house"
             value={house}
             onChange={(e) => setHouse(e.target.value)}
-            className="rounded-lg border border-stone-300 px-3 py-2 text-sm"
+            className="rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500"
           />
         </div>
         <input
@@ -95,7 +95,7 @@ export function AdminNomineeManager({
           placeholder="Photo URL (optional)"
           value={photoUrl}
           onChange={(e) => setPhotoUrl(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+          className="w-full rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500"
         />
         <div className="flex flex-wrap gap-3">
           <select
@@ -109,7 +109,7 @@ export function AdminNomineeManager({
                   : awards[0]?.id ?? ""
               );
             }}
-            className="rounded-lg border border-stone-300 px-3 py-2 text-sm"
+            className="rounded-lg border px-3 py-2 text-sm text-slate-900"
           >
             <option value="position">Position</option>
             <option value="award">Award</option>
@@ -117,7 +117,7 @@ export function AdminNomineeManager({
           <select
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            className="min-w-48 flex-1 rounded-lg border border-stone-300 px-3 py-2 text-sm"
+            className="min-w-48 flex-1 rounded-lg border px-3 py-2 text-sm text-slate-900"
           >
             {categories.map((c) => (
               <option key={c.id} value={c.id}>

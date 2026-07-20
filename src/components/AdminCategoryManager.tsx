@@ -66,14 +66,14 @@ export function AdminCategoryManager({
           placeholder={`${label} title`}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+          className="w-full rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500"
         />
         <input
           type="text"
           placeholder="Description (optional)"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm"
+          className="w-full rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500"
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
         <Button type="submit" loading={loading}>
