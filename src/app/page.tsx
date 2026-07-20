@@ -2,12 +2,29 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/BrandLogo";
 import { getSessionUser } from "@/lib/auth";
 
+function MottoWatermark() {
+  const motto = "Omnes Unum in Domino";
+  // Duplicate phrase for a seamless loop across the full width
+  const line = Array.from({ length: 6 }, () => motto).join("   ·   ");
+
+  return (
+    <div className="motto-watermark" aria-hidden="true">
+      <div className="motto-watermark__track">
+        <span className="motto-watermark__text">{line}</span>
+        <span className="motto-watermark__text">{line}</span>
+      </div>
+    </div>
+  );
+}
+
 export default async function HomePage() {
   const user = await getSessionUser();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-950 to-emerald-900 text-white">
-      <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-4 py-16 text-center">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-emerald-950 to-emerald-900 text-white">
+      <MottoWatermark />
+
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-4 py-16 text-center">
         <BrandLogo size={112} priority className="mb-6 h-28 w-28 drop-shadow-lg" />
         <h1 className="text-4xl font-bold tracking-tight">ICOBA Voting</h1>
         <p className="mt-4 max-w-lg text-lg text-emerald-100">

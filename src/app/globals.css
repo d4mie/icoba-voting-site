@@ -63,3 +63,50 @@ select option {
   color: var(--field-text);
   background: var(--field-bg);
 }
+
+/* Homepage motto watermark — slow end-to-end drift */
+@keyframes motto-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.motto-watermark {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.motto-watermark__track {
+  display: flex;
+  width: max-content;
+  animation: motto-marquee 28s linear infinite;
+  will-change: transform;
+}
+
+.motto-watermark__text {
+  flex-shrink: 0;
+  padding-inline: 3rem;
+  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.1);
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motto-watermark__track {
+    animation: none;
+    transform: translateX(-25%);
+  }
+}
+
