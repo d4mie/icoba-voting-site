@@ -31,9 +31,7 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isAuthPage =
-    path.startsWith("/login") ||
-    path.startsWith("/signup") ||
-    path.startsWith("/auth");
+    path.startsWith("/login") || path.startsWith("/signup");
   const isProtected =
     path.startsWith("/vote") || path.startsWith("/admin");
 
@@ -43,7 +41,8 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && isAuthPage && !path.startsWith("/auth/callback")) {
+  // Don't bounce signed-in users away from login while signing out
+  if (user && isAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/vote";
     return NextResponse.redirect(url);

@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { BrandLogo } from "@/components/BrandLogo";
+import { createClient } from "@/lib/supabase/client";
 
 export function SiteHeader({
   userName,
@@ -8,6 +11,13 @@ export function SiteHeader({
   userName?: string;
   showLogout?: boolean;
 }) {
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut({ scope: "global" });
+    // Hard navigate so cached session/pages are dropped
+    window.location.assign("/login");
+  }
+
   return (
     <header className="border-b border-emerald-900/10 bg-white">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
@@ -21,14 +31,13 @@ export function SiteHeader({
           </div>
         </Link>
         {showLogout && (
-          <form action="/auth/signout" method="POST">
-            <button
-              type="submit"
-              className="text-sm font-medium text-stone-600 hover:text-emerald-900"
-            >
-              Sign out
-            </button>
-          </form>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="text-sm font-medium text-stone-600 hover:text-emerald-900"
+          >
+            Sign out
+          </button>
         )}
       </div>
     </header>

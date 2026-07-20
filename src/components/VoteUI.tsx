@@ -102,8 +102,8 @@ export function SignOutButton() {
   async function handleSignOut() {
     setLoading(true);
     const supabase = createClient();
-    await supabase.auth.signOut();
-    window.location.href = "/login";
+    await supabase.auth.signOut({ scope: "global" });
+    window.location.assign("/login");
   }
 
   return (
