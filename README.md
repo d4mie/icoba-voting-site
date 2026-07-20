@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ICOBA Voting Site
 
-## Getting Started
+A voting website for ICOBA Positions and Awards. Voters sign up with email verification, pick one nominee per position/award (auto-saved as drafts), then submit their final ballot. Admins manage categories, nominees, and manually open/close voting.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Next.js** (App Router) + TypeScript + Tailwind CSS
+- **Supabase** — auth, PostgreSQL database, optional photo storage
+
+## Features
+
+- Open signup with **email verification** (must verify before voting)
+- Collects **first name** and **last name** at signup
+- Two sections: **POSITIONS** and **AWARDS**
+- Nominee cards with photo, full name, and school house
+- **One nominee per position/award** — enforced in the UI and database
+- **Auto-save** draft picks on every selection
+- **Review & submit** — change picks until final submit; then votes are locked
+- **Admin panel** — add/delete positions, awards, nominees; **manually close/open voting**
+
+## Setup
+
+### 1. Create a Supabase project
+
+1. Go to [supabase.com](https://supabase.com) and create a project.
+2. In **Authentication → Providers → Email**, enable email confirmations.
+3. In **Authentication → URL Configuration**, set:
+   - Site URL: `http://localhost:3000` (or your production URL)
+   - Redirect URLs: `http://localhost:3000/auth/callback`
+
+### 2. Run the database schema
+
+In Supabase **SQL Editor**, paste and run the contents of:
+
+```
+supabase/schema.sql
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Environment variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copy `.env.local.example` to `.env.local` and fill in your Supabase keys from **Project Settings → API**:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cp .env.local.example .env.local
+```
 
-## Learn More
+### 4. Make yourself an admin
 
-To learn more about Next.js, take a look at the following resources:
+After you sign up and verify your email, run this in the Supabase SQL Editor (replace the email):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```sql
+update public.profiles
+set is_admin = true
+where email = 'your-email@example.com';
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 5. Run locally
 
-## Deploy on Vercel
+```bash
+npm install
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Open [http://localhost:3000](http://localhost:3000).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Admin workflow
+
+1. Sign in as an admin user.
+2. Go to **Admin panel** from the voting home page.
+3. Add **positions** and **awards**.
+4. Add **nominees** (full name, house, optional photo URL) linked to each category.
+5. Keep voting **OPEN** while the election runs.
+6. Click **Close voting** when the election ends — no new picks or changes allowed.
+
+## Nominee photos
+
+For now, nominees use a **photo URL** (e.g. link to an image hosted on Supabase Storage, Google Drive direct link, or CDN). You can upload images to a public Supabase Storage bucket named `nominee-photos` and paste the public URL when adding nominees.
+
+## Deploy
+
+Deploy to [Vercel](https://vercel.com):
+
+1. Push the repo to GitHub.
+2. Import the project in Vercel.
+3. Add the same environment variables.
+4. Update Supabase redirect URLs to your production domain.
+
+## Project structure
+
+```
+src/app/
+  login/ signup/          Auth pages
+  vote/                   Voter flow
+  admin/                  Admin panel
+  api/votes/              Draft save & final submit
+  api/admin/              Admin CRUD & election toggle
+supabase/schema.sql       Database schema + RLS policies
+```
