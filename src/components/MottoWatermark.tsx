@@ -1,6 +1,6 @@
 export function MottoWatermark() {
-  const motto = "Omnes Unum in Domino";
-  const line = Array.from({ length: 6 }, () => motto).join("   ·   ");
+  const motto = ". Omnes Unum in Domino .";
+  const line = Array.from({ length: 6 }, () => motto).join("   ");
 
   return (
     <div className="motto-watermark" aria-hidden="true">
