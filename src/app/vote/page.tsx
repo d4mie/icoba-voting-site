@@ -33,7 +33,7 @@ export default async function VoteHomePage() {
   const readOnly = hasSubmitted || !settings.is_open;
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen">
       <SiteHeader
         userName={profile ? `${profile.first_name} ${profile.last_name}` : undefined}
       />
@@ -49,8 +49,8 @@ export default async function VoteHomePage() {
           </div>
         )}
 
-        <h1 className="text-2xl font-bold text-stone-900">Choose a section</h1>
-        <p className="mt-2 text-stone-600">
+        <h1 className="text-2xl font-bold text-white">Choose a section</h1>
+        <p className="mt-2 text-emerald-100">
           Select nominees for each position and award. Your picks save automatically.
         </p>
 
@@ -92,7 +92,7 @@ export default async function VoteHomePage() {
           <div className="mt-8">
             <Link
               href="/vote/review"
-              className="inline-flex rounded-lg bg-emerald-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-900"
+              className="inline-flex rounded-lg bg-amber-400 px-5 py-2.5 text-sm font-semibold text-emerald-950 hover:bg-amber-300"
             >
               Review &amp; submit votes
             </Link>
@@ -101,7 +101,7 @@ export default async function VoteHomePage() {
 
         {isAdmin && (
           <div className="mt-8">
-            <Link href="/admin" className="text-sm font-medium text-emerald-800 hover:underline">
+            <Link href="/admin" className="text-sm font-medium text-amber-300 hover:underline">
               Admin panel →
             </Link>
           </div>

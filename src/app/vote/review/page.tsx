@@ -16,13 +16,13 @@ export default async function ReviewPage() {
 
   if (profile?.votes_submitted_at) {
     return (
-      <div className="min-h-screen bg-stone-50">
+      <div className="min-h-screen">
         <SiteHeader
           userName={`${profile.first_name} ${profile.last_name}`}
         />
         <main className="mx-auto max-w-3xl px-4 py-8">
-          <p className="text-emerald-800">Your votes are already submitted.</p>
-          <Link href="/vote" className="mt-4 inline-block text-sm text-emerald-800 hover:underline">
+          <p className="text-emerald-100">Your votes are already submitted.</p>
+          <Link href="/vote" className="mt-4 inline-block text-sm text-amber-300 hover:underline">
             Back to home
           </Link>
         </main>
@@ -59,16 +59,16 @@ export default async function ReviewPage() {
     (awards ?? []).every((a) => draftByAward.has(a.id));
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen">
       <SiteHeader
         userName={profile ? `${profile.first_name} ${profile.last_name}` : undefined}
       />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <Link href="/vote" className="text-sm text-emerald-800 hover:underline">
+        <Link href="/vote" className="text-sm text-amber-300 hover:underline">
           ← Back to sections
         </Link>
-        <h1 className="mt-4 text-2xl font-bold text-stone-900">Review your votes</h1>
-        <p className="mt-2 text-stone-600">
+        <h1 className="mt-4 text-2xl font-bold text-white">Review your votes</h1>
+        <p className="mt-2 text-emerald-100">
           Check your selections below. You can still change picks before submitting.
         </p>
 
@@ -79,7 +79,7 @@ export default async function ReviewPage() {
         )}
 
         <section className="mt-8">
-          <h2 className="text-lg font-semibold text-stone-900">Positions</h2>
+          <h2 className="text-lg font-semibold text-white">Positions</h2>
           <div className="mt-3 space-y-2">
             {(positions ?? []).map((position) => {
               const nomineeId = draftByPosition.get(position.id);
@@ -112,7 +112,7 @@ export default async function ReviewPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-lg font-semibold text-stone-900">Awards</h2>
+          <h2 className="text-lg font-semibold text-white">Awards</h2>
           <div className="mt-3 space-y-2">
             {(awards ?? []).map((award) => {
               const nomineeId = draftByAward.get(award.id);

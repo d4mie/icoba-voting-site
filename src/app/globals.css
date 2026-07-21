@@ -3,12 +3,14 @@
 :root {
   --icoba-green: #0b6b3a;
   --icoba-green-dark: #084d2a;
+  --icoba-green-deep: #022c22;
+  --icoba-green-mid: #064e3b;
   --icoba-yellow: #f5c518;
   --icoba-yellow-soft: #fff6c2;
   --icoba-blue: #1d4ed8;
   --icoba-blue-soft: #dbeafe;
-  --background: #f7faf8;
-  --foreground: #0f172a;
+  --background: #022c22;
+  --foreground: #ecfdf5;
   --field-bg: #ffffff;
   --field-text: #0f172a;
   --field-placeholder: #64748b;
@@ -26,7 +28,13 @@
 }
 
 body {
-  background: var(--background);
+  min-height: 100%;
+  background: linear-gradient(
+    to bottom,
+    var(--icoba-green-deep),
+    var(--icoba-green-mid)
+  );
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
@@ -64,7 +72,7 @@ select option {
   background: var(--field-bg);
 }
 
-/* Homepage motto watermark — slow end-to-end drift */
+/* Sitewide motto watermark — slow end-to-end drift */
 @keyframes motto-marquee {
   from {
     transform: translateX(0);
@@ -76,7 +84,7 @@ select option {
 
 .motto-watermark {
   pointer-events: none;
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
   display: flex;
@@ -87,19 +95,19 @@ select option {
 .motto-watermark__track {
   display: flex;
   width: max-content;
-  animation: motto-marquee 28s linear infinite;
+  animation: motto-marquee 48s linear infinite;
   will-change: transform;
 }
 
 .motto-watermark__text {
   flex-shrink: 0;
-  padding-inline: 3rem;
-  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  padding-inline: 4rem;
+  font-size: clamp(1.75rem, 5vw, 3.25rem);
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   white-space: nowrap;
-  color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.16);
   user-select: none;
 }
 
@@ -109,4 +117,3 @@ select option {
     transform: translateX(-25%);
   }
 }
-

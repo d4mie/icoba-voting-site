@@ -39,27 +39,27 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen">
       <SiteHeader userName={`${profile.first_name} ${profile.last_name}`} />
       <main className="mx-auto max-w-5xl px-4 py-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-stone-900">Admin panel</h1>
-            <p className="mt-1 text-sm text-stone-600">
+            <h1 className="text-2xl font-bold text-white">Admin panel</h1>
+            <p className="mt-1 text-sm text-emerald-100">
               Manage categories, nominees, voting status, and submitted ballots.
             </p>
           </div>
-          <Link href="/vote" className="text-sm text-emerald-800 hover:underline">
+          <Link href="/vote" className="text-sm text-amber-300 hover:underline">
             ← Back to voting
           </Link>
         </div>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-xl border border-stone-200 bg-white p-4">
+          <div className="rounded-xl border border-white/20 bg-white p-4">
             <p className="text-sm text-stone-500">Registered voters</p>
             <p className="text-2xl font-bold text-stone-900">{voterCount ?? 0}</p>
           </div>
-          <div className="rounded-xl border border-stone-200 bg-white p-4">
+          <div className="rounded-xl border border-white/20 bg-white p-4">
             <p className="text-sm text-stone-500">Submitted ballots</p>
             <p className="text-2xl font-bold text-stone-900">{submittedCount ?? 0}</p>
           </div>

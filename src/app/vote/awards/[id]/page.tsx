@@ -41,19 +41,19 @@ export default async function AwardVotePage({
   const readOnly = !!profile?.votes_submitted_at || !settings.is_open;
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen">
       <SiteHeader
         userName={profile ? `${profile.first_name} ${profile.last_name}` : undefined}
       />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <Link href="/vote/awards" className="text-sm text-emerald-800 hover:underline">
+        <Link href="/vote/awards" className="text-sm text-amber-300 hover:underline">
           ← Back to awards
         </Link>
-        <h1 className="mt-4 text-2xl font-bold text-stone-900">{award.title}</h1>
+        <h1 className="mt-4 text-2xl font-bold text-white">{award.title}</h1>
         {award.description && (
-          <p className="mt-2 text-stone-600">{award.description}</p>
+          <p className="mt-2 text-emerald-100">{award.description}</p>
         )}
-        <p className="mt-2 text-sm text-stone-500">
+        <p className="mt-2 text-sm text-emerald-100/80">
           Select only one nominee. Your choice saves automatically.
         </p>
 

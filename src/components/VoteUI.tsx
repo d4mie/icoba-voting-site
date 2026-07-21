@@ -97,9 +97,9 @@ export function NomineePicker({
         );
       })}
       {!readOnly && (
-        <p className="text-xs text-stone-500">
-          Your pick for <strong>{categoryTitle}</strong> is saved automatically.
-          Tap another nominee to change it.
+        <p className="text-xs text-emerald-100/90">
+          Your pick for <strong className="text-white">{categoryTitle}</strong> is
+          saved automatically. Tap another nominee to change it.
         </p>
       )}
     </div>

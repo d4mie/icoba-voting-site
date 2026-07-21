@@ -28,16 +28,16 @@ export default async function PositionsPage() {
   const readOnly = !!profile?.votes_submitted_at || !settings.is_open;
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen">
       <SiteHeader
         userName={profile ? `${profile.first_name} ${profile.last_name}` : undefined}
       />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <Link href="/vote" className="text-sm text-emerald-800 hover:underline">
+        <Link href="/vote" className="text-sm text-amber-300 hover:underline">
           ← Back to sections
         </Link>
-        <h1 className="mt-4 text-2xl font-bold text-stone-900">POSITIONS</h1>
-        <p className="mt-2 text-stone-600">
+        <h1 className="mt-4 text-2xl font-bold text-white">POSITIONS</h1>
+        <p className="mt-2 text-emerald-100">
           Tap a position to see nominees and pick one.
         </p>
 
