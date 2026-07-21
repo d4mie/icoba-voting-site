@@ -1,6 +1,7 @@
 export function MottoWatermark() {
-  const motto = ". Omnes Unum in Domino .";
-  const line = Array.from({ length: 6 }, () => motto).join("   ");
+  // Trailing space keeps a single "." between repeats (no "..")
+  const unit = ". Omnes Unum in Domino ";
+  const line = unit.repeat(8);
 
   return (
     <div className="motto-watermark" aria-hidden="true">
