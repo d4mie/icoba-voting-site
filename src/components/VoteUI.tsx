@@ -33,9 +33,11 @@ export function NomineePicker({
 
   async function handleSelect(nomineeId: string) {
     if (readOnly) return;
+
+    const previous = selectedId;
     setSelectedId(nomineeId);
 
-    await fetch("/api/votes/draft", {
+    const res = await fetch("/api/votes/draft", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -44,6 +46,14 @@ export function NomineePicker({
         awardId: categoryType === "award" ? categoryId : null,
       }),
     });
+
+    if (!res.ok) {
+      setSelectedId(previous);
+      const data = await res.json().catch(() => ({}));
+      if (data.error === "Votes already submitted") {
+        window.location.href = "/vote/submitted";
+      }
+    }
   }
 
   return (

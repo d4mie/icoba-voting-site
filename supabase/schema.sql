@@ -183,10 +183,36 @@ create policy "Users can read own profile"
   on public.profiles for select
   using (auth.uid() = id or public.is_admin());
 
+create policy "Admins read all profiles"
+  on public.profiles for select
+  using (public.is_admin());
+
 create policy "Users can update own profile (not admin flag)"
   on public.profiles for update
   using (auth.uid() = id)
   with check (auth.uid() = id);
+
+-- Lock submitted ballots: cannot clear votes_submitted_at once set
+create or replace function public.protect_submitted_votes()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if old.votes_submitted_at is not null
+     and new.votes_submitted_at is distinct from old.votes_submitted_at then
+    raise exception 'Votes already submitted and cannot be changed';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists protect_submitted_votes_trigger on public.profiles;
+create trigger protect_submitted_votes_trigger
+  before update on public.profiles
+  for each row
+  execute function public.protect_submitted_votes();
 
 -- Election settings: everyone can read, admins can update
 create policy "Anyone authenticated can read election settings"

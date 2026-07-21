@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ElectionToggle } from "@/components/ElectionToggle";
 import { AdminWorkspace } from "@/components/AdminWorkspace";
+import { AdminBallots } from "@/components/AdminBallots";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
@@ -14,6 +15,8 @@ export default async function AdminPage() {
     { data: positions },
     { data: awards },
     { data: nominees },
+    { data: allProfiles },
+    { data: finalVotes },
     { count: voterCount },
     { count: submittedCount },
   ] = await Promise.all([
@@ -21,6 +24,13 @@ export default async function AdminPage() {
     supabase.from("positions").select("id, title, description").order("sort_order"),
     supabase.from("awards").select("id, title, description").order("sort_order"),
     supabase.from("nominees").select("*").order("full_name"),
+    supabase
+      .from("profiles")
+      .select("id, first_name, last_name, email, votes_submitted_at")
+      .order("votes_submitted_at", { ascending: false }),
+    supabase
+      .from("final_votes")
+      .select("user_id, nominee_id, position_id, award_id, submitted_at"),
     supabase.from("profiles").select("*", { count: "exact", head: true }),
     supabase
       .from("profiles")
@@ -36,7 +46,7 @@ export default async function AdminPage() {
           <div>
             <h1 className="text-2xl font-bold text-stone-900">Admin panel</h1>
             <p className="mt-1 text-sm text-stone-600">
-              Manage categories, nominees, and voting status.
+              Manage categories, nominees, voting status, and submitted ballots.
             </p>
           </div>
           <Link href="/vote" className="text-sm text-emerald-800 hover:underline">
@@ -58,6 +68,18 @@ export default async function AdminPage() {
         <div className="mt-6">
           <ElectionToggle initialIsOpen={settings?.is_open ?? false} />
         </div>
+
+        <AdminBallots
+          positions={(positions ?? []).map((p) => ({ id: p.id, title: p.title }))}
+          awards={(awards ?? []).map((a) => ({ id: a.id, title: a.title }))}
+          nominees={(nominees ?? []).map((n) => ({
+            id: n.id,
+            full_name: n.full_name,
+            house: n.house,
+          }))}
+          finalVotes={finalVotes ?? []}
+          voters={allProfiles ?? []}
+        />
 
         <AdminWorkspace
           initialPositions={positions ?? []}

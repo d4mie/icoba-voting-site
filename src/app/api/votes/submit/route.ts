@@ -71,18 +71,45 @@ export async function POST() {
     award_id: d.award_id,
   }));
 
+  // Block double submit if final votes already exist for this user
+  const { count: existingFinalCount } = await supabase
+    .from("final_votes")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
+  if ((existingFinalCount ?? 0) > 0) {
+    await supabase
+      .from("profiles")
+      .update({ votes_submitted_at: new Date().toISOString() })
+      .eq("id", user.id)
+      .is("votes_submitted_at", null);
+
+    return NextResponse.json(
+      { error: "Votes already submitted" },
+      { status: 403 }
+    );
+  }
+
   const { error: insertError } = await supabase
     .from("final_votes")
     .insert(finalRows);
 
   if (insertError) {
+    // Unique index violation = already voted
+    if (insertError.code === "23505") {
+      return NextResponse.json(
+        { error: "Votes already submitted" },
+        { status: 403 }
+      );
+    }
     return NextResponse.json({ error: insertError.message }, { status: 500 });
   }
 
   const { error: profileError } = await supabase
     .from("profiles")
     .update({ votes_submitted_at: new Date().toISOString() })
-    .eq("id", user.id);
+    .eq("id", user.id)
+    .is("votes_submitted_at", null);
 
   if (profileError) {
     return NextResponse.json({ error: profileError.message }, { status: 500 });
