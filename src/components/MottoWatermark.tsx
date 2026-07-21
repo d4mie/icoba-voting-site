@@ -10,7 +10,7 @@ export function MottoWatermark() {
           <span className="motto-watermark__text">{latin}</span>
           <span className="motto-watermark__text">{latin}</span>
         </div>
-        <div className="motto-watermark__track motto-watermark__track--right">
+        <div className="motto-watermark__track motto-watermark__track--left">
           <span className="motto-watermark__text">{english}</span>
           <span className="motto-watermark__text">{english}</span>
         </div>
