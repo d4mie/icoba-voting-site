@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ElectionToggle } from "@/components/ElectionToggle";
-import { AdminCategoryManager } from "@/components/AdminCategoryManager";
-import { AdminNomineeManager } from "@/components/AdminNomineeManager";
+import { AdminWorkspace } from "@/components/AdminWorkspace";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
@@ -60,18 +59,11 @@ export default async function AdminPage() {
           <ElectionToggle initialIsOpen={settings?.is_open ?? false} />
         </div>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
-          <AdminCategoryManager type="positions" initialItems={positions ?? []} />
-          <AdminCategoryManager type="awards" initialItems={awards ?? []} />
-        </div>
-
-        <div className="mt-6">
-          <AdminNomineeManager
-            positions={(positions ?? []).map((p) => ({ id: p.id, title: p.title }))}
-            awards={(awards ?? []).map((a) => ({ id: a.id, title: a.title }))}
-            initialNominees={nominees ?? []}
-          />
-        </div>
+        <AdminWorkspace
+          initialPositions={positions ?? []}
+          initialAwards={awards ?? []}
+          initialNominees={nominees ?? []}
+        />
       </main>
     </div>
   );

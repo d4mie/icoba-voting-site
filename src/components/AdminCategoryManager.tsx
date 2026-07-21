@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/Button";
 
 type Item = { id: string; title: string; description: string | null };
@@ -8,15 +8,21 @@ type Item = { id: string; title: string; description: string | null };
 export function AdminCategoryManager({
   type,
   initialItems,
+  onItemsChange,
 }: {
   type: "positions" | "awards";
   initialItems: Item[];
+  onItemsChange?: (items: Item[]) => void;
 }) {
   const [items, setItems] = useState(initialItems);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    onItemsChange?.(items);
+  }, [items, onItemsChange]);
 
   async function refresh() {
     const res = await fetch(`/api/admin/${type}`);
@@ -96,6 +102,9 @@ export function AdminCategoryManager({
             </button>
           </li>
         ))}
+        {items.length === 0 && (
+          <li className="text-sm text-stone-500">No {label.toLowerCase()}s yet.</li>
+        )}
       </ul>
     </div>
   );

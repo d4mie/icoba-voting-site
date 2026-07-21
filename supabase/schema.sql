@@ -266,5 +266,5 @@ create policy "Admins read all final votes"
   on public.final_votes for select
   using (public.is_admin());
 
--- Storage bucket for nominee photos (create in Supabase Dashboard → Storage)
--- Bucket name: nominee-photos (public read)
+-- Storage bucket for nominee photos:
+-- Also run supabase/storage.sql in the SQL Editor (creates public bucket + policies)
