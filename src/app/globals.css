@@ -72,13 +72,22 @@ select option {
   background: var(--field-bg);
 }
 
-/* Sitewide motto watermark — slow end-to-end drift */
-@keyframes motto-marquee {
+/* Sitewide motto watermark — opposing slow drifts */
+@keyframes motto-marquee-left {
   from {
     transform: translateX(0);
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+@keyframes motto-marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
   }
 }
 
@@ -92,28 +101,50 @@ select option {
   overflow: hidden;
 }
 
+.motto-watermark__stack {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: clamp(1rem, 3vw, 2.5rem);
+}
+
 .motto-watermark__track {
   display: flex;
   width: max-content;
-  animation: motto-marquee 48s linear infinite;
   will-change: transform;
+}
+
+.motto-watermark__track--left {
+  animation: motto-marquee-left 48s linear infinite;
+}
+
+.motto-watermark__track--right {
+  animation: motto-marquee-right 48s linear infinite;
 }
 
 .motto-watermark__text {
   flex-shrink: 0;
-  padding-inline: 4rem;
-  font-size: clamp(1.75rem, 5vw, 3.25rem);
+  padding-inline: 2rem;
+  font-size: clamp(2.75rem, 9vw, 6.5rem);
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
-  color: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.15);
   user-select: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .motto-watermark__track {
+  .motto-watermark__track--left,
+  .motto-watermark__track--right {
     animation: none;
-    transform: translateX(-25%);
+  }
+
+  .motto-watermark__track--left {
+    transform: translateX(-20%);
+  }
+
+  .motto-watermark__track--right {
+    transform: translateX(-30%);
   }
 }
