@@ -24,6 +24,7 @@ export function AdminNomineeManager({
   initialNominees: Nominee[];
 }) {
   const [nominees, setNominees] = useState(initialNominees);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
   const [house, setHouse] = useState("");
   const [photoUrl, setPhotoUrl] = useState("");
@@ -37,7 +38,6 @@ export function AdminNomineeManager({
 
   const categories = categoryType === "position" ? positions : awards;
 
-  // Keep dropdown selection valid when positions/awards lists change
   useEffect(() => {
     if (categories.length === 0) {
       setCategoryId("");
@@ -52,6 +52,39 @@ export function AdminNomineeManager({
     const res = await fetch("/api/admin/nominees");
     const data = await res.json();
     if (data.nominees) setNominees(data.nominees);
+  }
+
+  function clearPhoto() {
+    setPhotoUrl("");
+    setPhotoPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  function resetForm() {
+    setEditingId(null);
+    setFullName("");
+    setHouse("");
+    clearPhoto();
+    setError(null);
+    setCategoryType("position");
+    setCategoryId(positions[0]?.id ?? "");
+  }
+
+  function startEdit(nominee: Nominee) {
+    setEditingId(nominee.id);
+    setFullName(nominee.full_name);
+    setHouse(nominee.house);
+    setPhotoUrl(nominee.photo_url ?? "");
+    setPhotoPreview(nominee.photo_url);
+    if (nominee.award_id) {
+      setCategoryType("award");
+      setCategoryId(nominee.award_id);
+    } else {
+      setCategoryType("position");
+      setCategoryId(nominee.position_id ?? positions[0]?.id ?? "");
+    }
+    setError(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -84,8 +117,7 @@ export function AdminNomineeManager({
 
     if (!res.ok) {
       setError(data.error ?? "Photo upload failed");
-      setPhotoPreview(null);
-      setPhotoUrl("");
+      setPhotoPreview(photoUrl || null);
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
@@ -93,13 +125,7 @@ export function AdminNomineeManager({
     setPhotoUrl(data.url);
   }
 
-  function clearPhoto() {
-    setPhotoUrl("");
-    setPhotoPreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  }
-
-  async function handleAdd(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
 
@@ -114,35 +140,42 @@ export function AdminNomineeManager({
 
     setLoading(true);
 
-    const res = await fetch("/api/admin/nominees", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fullName,
-        house,
-        photoUrl: photoUrl || null,
-        positionId: categoryType === "position" ? categoryId : null,
-        awardId: categoryType === "award" ? categoryId : null,
-      }),
-    });
+    const payload = {
+      fullName,
+      house,
+      photoUrl: photoUrl || null,
+      positionId: categoryType === "position" ? categoryId : null,
+      awardId: categoryType === "award" ? categoryId : null,
+    };
+
+    const res = editingId
+      ? await fetch(`/api/admin/nominees/${editingId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+      : await fetch("/api/admin/nominees", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
 
     setLoading(false);
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error ?? "Failed to add nominee");
+      setError(data.error ?? "Failed to save nominee");
       return;
     }
 
-    setFullName("");
-    setHouse("");
-    clearPhoto();
+    resetForm();
     await refresh();
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this nominee?")) return;
     await fetch(`/api/admin/nominees/${id}`, { method: "DELETE" });
+    if (editingId === id) resetForm();
     await refresh();
   }
 
@@ -152,10 +185,12 @@ export function AdminNomineeManager({
     <div className="rounded-2xl border border-stone-200 bg-white p-6">
       <h2 className="text-lg font-semibold text-stone-900">Nominees</h2>
       <p className="mt-1 text-sm text-stone-600">
-        Choose Position or Award, pick from your list, then add the nominee.
+        {editingId
+          ? "Editing this nominee. Change any details, then save."
+          : "Choose Position or Award, pick from your list, then add the nominee — or tap Edit below."}
       </p>
 
-      <form onSubmit={handleAdd} className="mt-4 space-y-3">
+      <form onSubmit={handleSubmit} className="mt-4 space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <input
             type="text"
@@ -248,15 +283,23 @@ export function AdminNomineeManager({
 
         {categoryLabel && (
           <p className="text-xs text-stone-500">
-            Assigning nominee to: <strong>{categoryLabel}</strong>
+            {editingId ? "Assigned to" : "Assigning nominee to"}:{" "}
+            <strong>{categoryLabel}</strong>
           </p>
         )}
 
         {error && <p className="text-sm text-red-600">{error}</p>}
 
-        <Button type="submit" loading={loading || uploading} disabled={!categoryId}>
-          Add nominee
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button type="submit" loading={loading || uploading} disabled={!categoryId}>
+            {editingId ? "Save nominee" : "Add nominee"}
+          </Button>
+          {editingId && (
+            <Button type="button" variant="secondary" onClick={resetForm}>
+              Cancel
+            </Button>
+          )}
+        </div>
       </form>
 
       <ul className="mt-4 max-h-80 space-y-2 overflow-y-auto">
@@ -268,7 +311,11 @@ export function AdminNomineeManager({
           return (
             <li
               key={n.id}
-              className="flex items-center justify-between gap-3 rounded-lg border border-stone-100 px-3 py-2 text-sm"
+              className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm ${
+                editingId === n.id
+                  ? "border-emerald-400 bg-emerald-50"
+                  : "border-stone-100"
+              }`}
             >
               <div className="flex min-w-0 items-center gap-3">
                 {n.photo_url ? (
@@ -288,13 +335,22 @@ export function AdminNomineeManager({
                   <span className="block text-xs text-stone-500">{place}</span>
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={() => handleDelete(n.id)}
-                className="shrink-0 text-red-600 hover:underline"
-              >
-                Delete
-              </button>
+              <div className="flex shrink-0 gap-3">
+                <button
+                  type="button"
+                  onClick={() => startEdit(n)}
+                  className="font-medium text-emerald-800 hover:underline"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(n.id)}
+                  className="text-red-600 hover:underline"
+                >
+                  Delete
+                </button>
+              </div>
             </li>
           );
         })}

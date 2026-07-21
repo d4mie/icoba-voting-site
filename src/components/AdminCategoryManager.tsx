@@ -17,6 +17,7 @@ export function AdminCategoryManager({
   const [items, setItems] = useState(initialItems);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,33 +31,53 @@ export function AdminCategoryManager({
     if (data.items) setItems(data.items);
   }
 
-  async function handleAdd(e: React.FormEvent) {
+  function startEdit(item: Item) {
+    setEditingId(item.id);
+    setTitle(item.title);
+    setDescription(item.description ?? "");
+    setError(null);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setTitle("");
+    setDescription("");
+    setError(null);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const res = await fetch(`/api/admin/${type}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description }),
-    });
+    const res = editingId
+      ? await fetch(`/api/admin/${type}/${editingId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, description }),
+        })
+      : await fetch(`/api/admin/${type}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, description }),
+        });
 
     setLoading(false);
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error ?? "Failed to add");
+      setError(data.error ?? "Failed to save");
       return;
     }
 
-    setTitle("");
-    setDescription("");
+    cancelEdit();
     await refresh();
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this item and its nominees?")) return;
     await fetch(`/api/admin/${type}/${id}`, { method: "DELETE" });
+    if (editingId === id) cancelEdit();
     await refresh();
   }
 
@@ -65,7 +86,13 @@ export function AdminCategoryManager({
   return (
     <div className="rounded-2xl border border-stone-200 bg-white p-6">
       <h2 className="text-lg font-semibold text-stone-900">{label}s</h2>
-      <form onSubmit={handleAdd} className="mt-4 space-y-3">
+      <p className="mt-1 text-sm text-stone-600">
+        {editingId
+          ? `Editing this ${label.toLowerCase()}. Update the fields, then save.`
+          : `Add a new ${label.toLowerCase()}, or tap Edit on one below.`}
+      </p>
+
+      <form onSubmit={handleSubmit} className="mt-4 space-y-3">
         <input
           type="text"
           required
@@ -82,24 +109,52 @@ export function AdminCategoryManager({
           className="w-full rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500"
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <Button type="submit" loading={loading}>
-          Add {label.toLowerCase()}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button type="submit" loading={loading}>
+            {editingId ? `Save ${label.toLowerCase()}` : `Add ${label.toLowerCase()}`}
+          </Button>
+          {editingId && (
+            <Button type="button" variant="secondary" onClick={cancelEdit}>
+              Cancel
+            </Button>
+          )}
+        </div>
       </form>
+
       <ul className="mt-4 space-y-2">
         {items.map((item) => (
           <li
             key={item.id}
-            className="flex items-center justify-between rounded-lg border border-stone-100 px-3 py-2 text-sm"
+            className={`rounded-lg border px-3 py-2 text-sm ${
+              editingId === item.id
+                ? "border-emerald-400 bg-emerald-50"
+                : "border-stone-100"
+            }`}
           >
-            <span>{item.title}</span>
-            <button
-              type="button"
-              onClick={() => handleDelete(item.id)}
-              className="text-red-600 hover:underline"
-            >
-              Delete
-            </button>
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-medium text-stone-900">{item.title}</p>
+                {item.description && (
+                  <p className="mt-0.5 text-xs text-stone-500">{item.description}</p>
+                )}
+              </div>
+              <div className="flex shrink-0 gap-3">
+                <button
+                  type="button"
+                  onClick={() => startEdit(item)}
+                  className="font-medium text-emerald-800 hover:underline"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(item.id)}
+                  className="text-red-600 hover:underline"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
           </li>
         ))}
         {items.length === 0 && (
