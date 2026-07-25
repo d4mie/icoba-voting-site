@@ -10,7 +10,8 @@ set search_path = public
 as $$
 begin
   if old.votes_submitted_at is not null
-     and new.votes_submitted_at is distinct from old.votes_submitted_at then
+     and new.votes_submitted_at is distinct from old.votes_submitted_at
+     and not public.is_admin() then
     raise exception 'Votes already submitted and cannot be changed';
   end if;
   return new;

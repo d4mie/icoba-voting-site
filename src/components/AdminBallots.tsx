@@ -1,3 +1,9 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Button } from "@/components/Button";
+
 type Nominee = {
   id: string;
   full_name: string;
@@ -36,8 +42,12 @@ export function AdminBallots({
   finalVotes: FinalVote[];
   voters: Voter[];
 }) {
+  const router = useRouter();
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [clearingAll, setClearingAll] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const nomineeMap = new Map(nominees.map((n) => [n.id, n]));
-  const voterMap = new Map(voters.map((v) => [v.id, v]));
 
   const submittedVoters = voters
     .filter((v) => v.votes_submitted_at)
@@ -75,6 +85,70 @@ export function AdminBallots({
 
   function votesForUser(userId: string) {
     return finalVotes.filter((v) => v.user_id === userId);
+  }
+
+  async function clearBallot(userId: string, label: string) {
+    if (
+      !confirm(
+        `Clear ballot for ${label}? They will be able to vote again from scratch.`
+      )
+    ) {
+      return;
+    }
+
+    setError(null);
+    setLoadingId(userId);
+
+    const res = await fetch("/api/admin/ballots/clear", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setLoadingId(null);
+
+    if (!res.ok) {
+      setError(data.error ?? "Failed to clear ballot");
+      return;
+    }
+
+    router.refresh();
+  }
+
+  async function clearAllBallots() {
+    if (
+      !confirm(
+        "Reset ALL submitted ballots? Every voter will be unlocked and can vote again. This cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    if (
+      !confirm(
+        "Are you sure? This permanently deletes every submitted ballot record."
+      )
+    ) {
+      return;
+    }
+
+    setError(null);
+    setClearingAll(true);
+
+    const res = await fetch("/api/admin/ballots/clear", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ all: true }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setClearingAll(false);
+
+    if (!res.ok) {
+      setError(data.error ?? "Failed to reset ballots");
+      return;
+    }
+
+    router.refresh();
   }
 
   return (
@@ -179,10 +253,27 @@ export function AdminBallots({
       </div>
 
       <div className="rounded-2xl border border-stone-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-stone-900">Submitted ballots</h2>
-        <p className="mt-1 text-sm text-stone-600">
-          Each person may submit only once. After submit, their ballot is locked.
-        </p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-stone-900">
+              Submitted ballots
+            </h2>
+            <p className="mt-1 text-sm text-stone-600">
+              Clear one person&apos;s ballot, or reset every submitted ballot.
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="danger"
+            loading={clearingAll}
+            disabled={submittedVoters.length === 0}
+            onClick={clearAllBallots}
+          >
+            Reset all ballots
+          </Button>
+        </div>
+
+        {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
 
         <div className="mt-4 space-y-3">
           {submittedVoters.length === 0 && (
@@ -191,16 +282,15 @@ export function AdminBallots({
 
           {submittedVoters.map((voter) => {
             const votes = votesForUser(voter.id);
+            const label = `${voter.first_name} ${voter.last_name}`;
             return (
               <details
                 key={voter.id}
                 className="rounded-xl border border-stone-100 open:bg-stone-50"
               >
-                <summary className="cursor-pointer list-none px-4 py-3 sm:flex sm:items-center sm:justify-between">
+                <summary className="cursor-pointer list-none px-4 py-3 sm:flex sm:items-center sm:justify-between sm:gap-3">
                   <div>
-                    <p className="font-medium text-stone-900">
-                      {voter.first_name} {voter.last_name}
-                    </p>
+                    <p className="font-medium text-stone-900">{label}</p>
                     <p className="text-xs text-stone-500">{voter.email}</p>
                   </div>
                   <p className="mt-1 text-xs text-stone-500 sm:mt-0">
@@ -233,6 +323,16 @@ export function AdminBallots({
                       );
                     })}
                   </ul>
+                  <div className="mt-4">
+                    <Button
+                      type="button"
+                      variant="danger"
+                      loading={loadingId === voter.id}
+                      onClick={() => clearBallot(voter.id, label)}
+                    >
+                      Clear this ballot
+                    </Button>
+                  </div>
                 </div>
               </details>
             );
