@@ -37,11 +37,11 @@ export default function RootLayout({
         <MottoWatermark />
         <div className="relative z-10 flex min-h-full flex-1 flex-col">
           {children}
-          <footer className="mt-auto px-4 py-5 text-center text-xs text-neutral-600">
+          <footer className="mt-auto px-4 py-5 text-center text-xs text-emerald-100/80">
             Design and Development by{" "}
             <a
               href="https://damilolaogunnaike.com"
-              className="font-semibold text-neutral-900 underline-offset-2 hover:underline"
+              className="font-semibold text-white underline-offset-2 hover:text-amber-300 hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
